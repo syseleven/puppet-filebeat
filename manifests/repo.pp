@@ -1,10 +1,13 @@
-class filebeat::repo {
-  $debian_repo_url = $filebeat::real_version ? {
+#
+#
+#
+class filebeat_deprecated::repo {
+  $debian_repo_url = $filebeat_deprecated::real_version ? {
     '1' => 'http://packages.elastic.co/beats/apt',
     '5' => 'https://artifacts.elastic.co/packages/5.x/apt',
   }
 
-  $yum_repo_url = $filebeat::real_version ? {
+  $yum_repo_url = $filebeat_deprecated::real_version ? {
     '1' => 'https://packages.elastic.co/beats/yum/el/$basearch',
     '5' => 'https://artifacts.elastic.co/packages/5.x/yum',
   }
@@ -17,7 +20,7 @@ class filebeat::repo {
 
       if !defined(Apt::Source['beats']){
         apt::source { 'beats':
-          ensure   => $::filebeat::alternate_ensure,
+          ensure   => $::filebeat_deprecated::alternate_ensure,
           location => $debian_repo_url,
           release  => 'stable',
           repos    => 'main',
@@ -31,7 +34,7 @@ class filebeat::repo {
     'RedHat', 'Linux': {
       if !defined(Yumrepo['beats']){
         yumrepo { 'beats':
-          ensure   => $::filebeat::alternate_ensure,
+          ensure   => $::filebeat_deprecated::alternate_ensure,
           descr    => 'elastic beats repo',
           baseurl  => $yum_repo_url,
           gpgcheck => 1,
@@ -48,7 +51,7 @@ class filebeat::repo {
       }
       if !defined(Zypprepo['beats']){
         zypprepo { 'beats':
-          ensure      => $::filebeat::alternate_ensure,
+          ensure      => $::filebeat_deprecated::alternate_ensure,
           baseurl     => $yum_repo_url,
           enabled     => 1,
           autorefresh => 1,
@@ -60,7 +63,7 @@ class filebeat::repo {
       }
     }
     default: {
-      fail($filebeat::kernel_fail_message)
+      fail($filebeat_deprecated::kernel_fail_message)
     }
   }
 }

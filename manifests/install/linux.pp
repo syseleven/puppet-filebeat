@@ -1,5 +1,8 @@
-class filebeat::install::linux {
-  package {'filebeat':
-    ensure => $filebeat::package_ensure,
+#
+#
+#
+class filebeat_deprecated::install::linux {
+  package { 'filebeat':
+    ensure => $filebeat_deprecated::package_ensure,
   }
 }

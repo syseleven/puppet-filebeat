@@ -1,4 +1,7 @@
-define filebeat::prospector (
+#
+#
+#
+define filebeat_deprecated::prospector (
   $ensure                = present,
   $paths                 = [],
   $exclude_files         = [],
@@ -36,24 +39,23 @@ define filebeat::prospector (
   validate_array($paths, $exclude_files, $include_lines, $exclude_lines, $tags)
   validate_bool($tail_files, $close_renamed, $close_removed, $close_eof, $clean_removed, $symlinks)
 
-  $prospector_template = $filebeat::real_version ? {
+  $prospector_template = $filebeat_deprecated::real_version ? {
     '1'     => 'prospector1.yml.erb',
     default => 'prospector5.yml.erb',
   }
 
   case $::kernel {
     'Linux' : {
-      $filebeat_path = $filebeat::real_version ? {
+      $filebeat_path = $filebeat_deprecated::real_version ? {
         '1'     => '/usr/bin/filebeat',
         default => '/usr/share/filebeat/bin/filebeat',
       }
 
-      file { "filebeat-${name}":
+      file { "${filebeat_deprecated::config_dir}/${name}.yml":
         ensure       => $ensure,
-        path         => "${filebeat::config_dir}/${name}.yml",
         owner        => 'root',
         group        => 'root',
-        mode         => $::filebeat::config_file_mode,
+        mode         => $::filebeat_deprecated::config_file_mode,
         content      => template("${module_name}/${prospector_template}"),
         validate_cmd => "${filebeat_path} -N -configtest -c %",
         notify       => Service['filebeat'],
@@ -62,16 +64,15 @@ define filebeat::prospector (
     'Windows' : {
       $filebeat_path = 'c:\Program Files\Filebeat\filebeat.exe'
 
-      file { "filebeat-${name}":
+      file { "${filebeat_deprecated::config_dir}/${name}.yml":
         ensure       => $ensure,
-        path         => "${filebeat::config_dir}/${name}.yml",
         content      => template("${module_name}/${prospector_template}"),
         validate_cmd => "\"${filebeat_path}\" -N -configtest -c \"%\"",
         notify       => Service['filebeat'],
       }
     }
     default : {
-      fail($filebeat::kernel_fail_message)
+      fail($filebeat_deprecated::kernel_fail_message)
     }
   }
 }

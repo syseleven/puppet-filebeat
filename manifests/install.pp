@@ -1,27 +1,30 @@
-class filebeat::install {
-  anchor { 'filebeat::install::begin': }
+#
+#
+#
+class filebeat_deprecated::install {
+  anchor { 'filebeat_deprecated::install::begin': }
 
   case $::kernel {
     'Linux':   {
-      class{ '::filebeat::install::linux':
-        notify => Class['filebeat::service'],
+      class{ '::filebeat_deprecated::install::linux':
+        notify => Class['filebeat_deprecated::service'],
       }
-      Anchor['filebeat::install::begin'] -> Class['filebeat::install::linux'] -> Anchor['filebeat::install::end']
-      if $::filebeat::manage_repo {
-        class { '::filebeat::repo': }
-        Class['filebeat::repo'] -> Class['filebeat::install::linux']
+      Anchor['filebeat_deprecated::install::begin'] -> Class['filebeat_deprecated::install::linux'] -> Anchor['filebeat_deprecated::install::end']
+      if $::filebeat_deprecated::manage_repo {
+        class { '::filebeat_deprecated::repo': }
+        Class['filebeat_deprecated::repo'] -> Class['filebeat_deprecated::install::linux']
       }
     }
     'Windows': {
-      class{'::filebeat::install::windows':
-        notify => Class['filebeat::service'],
+      class{'::filebeat_deprecated::install::windows':
+        notify => Class['filebeat_deprecated::service'],
       }
-      Anchor['filebeat::install::begin'] -> Class['filebeat::install::windows'] -> Anchor['filebeat::install::end']
+      Anchor['filebeat_deprecated::install::begin'] -> Class['filebeat_deprecated::install::windows'] -> Anchor['filebeat_deprecated::install::end']
     }
     default:   {
-      fail($filebeat::kernel_fail_message)
+      fail($filebeat_deprecated::kernel_fail_message)
     }
   }
 
-  anchor { 'filebeat::install::end': }
+  anchor { 'filebeat_deprecated::install::end': }
 }

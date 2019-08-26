@@ -1,5 +1,5 @@
 {
-  "name": "pcfens-filebeat",
+  "name": "pcfens-filebeat_deprecated",
   "version": "0.11.2",
   "author": "pcfens",
   "license": "Apache-2.0",

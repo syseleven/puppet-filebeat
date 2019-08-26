@@ -2,7 +2,7 @@
 # helps manage which files are shipped
 #
 # @example
-# class { 'filebeat':
+# class { 'filebeat_deprecated':
 #   outputs => {
 #     'logstash' => {
 #       'hosts' => [
@@ -46,46 +46,50 @@
 # @param prospectors [Hash] Prospectors that will be created. Commonly used to create prospectors using hiera
 # @param prospectors_merge [Boolean] Whether $prospectors should merge all hiera sources, or use simple automatic parameter lookup
 # proxy_address [String] Proxy server to use for downloading files
-class filebeat (
+class filebeat_deprecated (
   $major_version        = undef,
-  $package_ensure       = $filebeat::params::package_ensure,
-  $manage_repo          = $filebeat::params::manage_repo,
-  $service_ensure       = $filebeat::params::service_ensure,
-  $service_enable       = $filebeat::params::service_enable,
-  $service_provider     = $filebeat::params::service_provider,
-  $spool_size           = $filebeat::params::spool_size,
-  $idle_timeout         = $filebeat::params::idle_timeout,
-  $publish_async        = $filebeat::params::publish_async,
-  $registry_file        = $filebeat::params::registry_file,
-  $config_file          = $filebeat::params::config_file,
-  $config_dir_mode      = $filebeat::params::config_dir_mode,
-  $config_dir           = $filebeat::params::config_dir,
-  $config_file_mode     = $filebeat::params::config_file_mode,
-  $purge_conf_dir       = $filebeat::params::purge_conf_dir,
-  $outputs              = $filebeat::params::outputs,
-  $shipper              = $filebeat::params::shipper,
-  $logging              = $filebeat::params::logging,
-  $run_options          = $filebeat::params::run_options,
+  $package_ensure       = $filebeat_deprecated::params::package_ensure,
+  $manage_repo          = $filebeat_deprecated::params::manage_repo,
+  $service_ensure       = $filebeat_deprecated::params::service_ensure,
+  $service_enable       = $filebeat_deprecated::params::service_enable,
+  $service_provider     = $filebeat_deprecated::params::service_provider,
+  $spool_size           = $filebeat_deprecated::params::spool_size,
+  $idle_timeout         = $filebeat_deprecated::params::idle_timeout,
+  $publish_async        = $filebeat_deprecated::params::publish_async,
+  $registry_file        = $filebeat_deprecated::params::registry_file,
+  $config_file          = $filebeat_deprecated::params::config_file,
+  $config_dir_mode      = $filebeat_deprecated::params::config_dir_mode,
+  $config_dir           = $filebeat_deprecated::params::config_dir,
+  $config_file_mode     = $filebeat_deprecated::params::config_file_mode,
+  $purge_conf_dir       = $filebeat_deprecated::params::purge_conf_dir,
+  $outputs              = $filebeat_deprecated::params::outputs,
+  $shipper              = $filebeat_deprecated::params::shipper,
+  $logging              = $filebeat_deprecated::params::logging,
+  $run_options          = $filebeat_deprecated::params::run_options,
   $conf_template        = undef,
-  $download_url         = $filebeat::params::download_url,
-  $install_dir          = $filebeat::params::install_dir,
-  $tmp_dir              = $filebeat::params::tmp_dir,
+  $download_url         = $filebeat_deprecated::params::download_url,
+  $install_dir          = $filebeat_deprecated::params::install_dir,
+  $tmp_dir              = $filebeat_deprecated::params::tmp_dir,
   #### v5 only ####
-  $use_generic_template = $filebeat::params::use_generic_template,
-  $shutdown_timeout     = $filebeat::params::shutdown_timeout,
-  $beat_name            = $filebeat::params::beat_name,
-  $tags                 = $filebeat::params::tags,
-  $queue_size           = $filebeat::params::queue_size,
-  $max_procs            = $filebeat::params::max_procs,
-  $fields               = $filebeat::params::fields,
-  $fields_under_root    = $filebeat::params::fields_under_root,
+  $use_generic_template = $filebeat_deprecated::params::use_generic_template,
+  $shutdown_timeout     = $filebeat_deprecated::params::shutdown_timeout,
+  $beat_name            = $filebeat_deprecated::params::beat_name,
+  $tags                 = $filebeat_deprecated::params::tags,
+  $queue_size           = $filebeat_deprecated::params::queue_size,
+  $max_procs            = $filebeat_deprecated::params::max_procs,
+  $fields               = $filebeat_deprecated::params::fields,
+  $fields_under_root    = $filebeat_deprecated::params::fields_under_root,
   $processors           = {},
   $processors_merge     = false,
   #### End v5 onlly ####
   $prospectors          = {},
   $prospectors_merge    = false,
   $proxy_address        = undef
-) inherits filebeat::params {
+) inherits filebeat_deprecated::params {
+
+  if defined(Class['filebeat']) {
+    fail("You cannot include the module '${module_name}' and module 'filebeat' at the same time!")
+  }
 
   include ::stdlib
 
@@ -93,11 +97,11 @@ class filebeat (
 
   validate_bool($manage_repo, $processors_merge, $prospectors_merge)
 
-  if $major_version == undef and getvar('::filebeat_version') == undef {
+  if $major_version == undef and getvar('::filebeat_deprecated_version') == undef {
     $real_version = '5'
-  } elsif $major_version == undef and versioncmp($::filebeat_version, '5.0.0') >= 0 {
+  } elsif $major_version == undef and versioncmp($::filebeat_deprecated_version, '5.0.0') >= 0 {
     $real_version = '5'
-  } elsif $major_version == undef and versioncmp($::filebeat_version, '5.0.0') < 0 {
+  } elsif $major_version == undef and versioncmp($::filebeat_deprecated_version, '5.0.0') < 0 {
     $real_version = '1'
   } else {
     $real_version = $major_version
@@ -120,18 +124,18 @@ class filebeat (
   }
 
   if $prospectors_merge {
-    $prospectors_final = hiera_hash('filebeat::prospectors', $prospectors)
+    $prospectors_final = hiera_hash('filebeat_deprecated::prospectors', $prospectors)
   } else {
     $prospectors_final = $prospectors
   }
 
   if $processors_merge {
-    $processors_final = hiera_hash('filebeat::processors', $processors)
+    $processors_final = hiera_hash('filebeat_deprecated::processors', $processors)
   } else {
     $processors_final = $processors
   }
 
-  if $config_file != $filebeat::params::config_file {
+  if $config_file != $filebeat_deprecated::params::config_file {
     warning('You\'ve specified a non-standard config_file location - filebeat may fail to start unless you\'re doing something to fix this')
   }
 
@@ -161,25 +165,25 @@ class filebeat (
   # If we're removing filebeat, do things in a different order to make sure
   # we remove as much as possible
   if $package_ensure == 'absent' {
-    anchor { 'filebeat::begin': }
-    -> class { '::filebeat::config': }
-    -> class { '::filebeat::install': }
-    -> class { '::filebeat::service': }
-    -> anchor { 'filebeat::end': }
+    anchor { 'filebeat_deprecated::begin': }
+    -> class { '::filebeat_deprecated::config': }
+    -> class { '::filebeat_deprecated::install': }
+    -> class { '::filebeat_deprecated::service': }
+    -> anchor { 'filebeat_deprecated::end': }
   } else {
-    anchor { 'filebeat::begin': }
-    -> class { '::filebeat::install': }
-    -> class { '::filebeat::config': }
-    -> class { '::filebeat::service': }
-    -> anchor { 'filebeat::end': }
+    anchor { 'filebeat_deprecated::begin': }
+    -> class { '::filebeat_deprecated::install': }
+    -> class { '::filebeat_deprecated::config': }
+    -> class { '::filebeat_deprecated::service': }
+    -> anchor { 'filebeat_deprecated::end': }
   }
 
   if $package_ensure != 'absent' {
     if !empty($prospectors_final) {
-      create_resources('filebeat::prospector', $prospectors_final)
+      create_resources('filebeat_deprecated::prospector', $prospectors_final)
     }
     if !empty($processors_final) {
-      create_resources('filebeat::processor', $processors_final)
+      create_resources('filebeat_deprecated::processor', $processors_final)
     }
   }
 }

@@ -1,16 +1,19 @@
-define filebeat::processor(
+#
+#
+#
+define filebeat_deprecated::processor (
   $ensure         = present,
   $priority       = 10,
   $processor_name = $name,
   $params         = undef,
   $when           = undef,
 ) {
-  include ::filebeat
+  include ::filebeat_deprecated
 
   validate_integer($priority)
   validate_string($processor_name)
 
-  if versioncmp($filebeat::real_version, '5') < 0 {
+  if versioncmp($filebeat_deprecated::real_version, '5') < 0 {
     fail('Processors only work on Filebeat 5.0 and higher')
   }
 
@@ -48,26 +51,24 @@ define filebeat::processor(
 
   case $::kernel {
     'Linux': {
-      file{"filebeat-processor-${name}":
+      file{ "${filebeat_deprecated::config_dir}/${_priority}-processor-${name}.yml":
         ensure  => $ensure,
-        path    => "${filebeat::config_dir}/${_priority}-processor-${name}.yml",
         owner   => 'root',
         group   => 'root',
-        mode    => $::filebeat::config_file_mode,
+        mode    => $::filebeat_deprecated::config_file_mode,
         content => inline_template('<%= @processor_config.to_yaml() %>'),
-        notify  => Class['filebeat::service'],
+        notify  => Class['filebeat_deprecated::service'],
       }
     }
     'Windows': {
-      file{"filebeat-processor-${name}":
+      file{ "${filebeat_deprecated::config_dir}/${_priority}-processor-${name}.yml":
         ensure  => $ensure,
-        path    => "${filebeat::config_dir}/${_priority}-processor-${name}.yml",
         content => inline_template('<%= @processor_config.to_yaml() %>'),
-        notify  => Class['filebeat::service'],
+        notify  => Class['filebeat_deprecated::service'],
       }
     }
     default: {
-      fail($filebeat::kernel_fail_message)
+      fail($filebeat_deprecated::kernel_fail_message)
     }
   }
 }

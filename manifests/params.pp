@@ -1,4 +1,7 @@
-class filebeat::params {
+#
+#
+#
+class filebeat_deprecated::params {
   $package_ensure       = present
   $manage_repo          = true
   $service_ensure       = running

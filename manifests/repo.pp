@@ -20,11 +20,12 @@ class filebeat_deprecated::repo {
 
       if !defined(Apt::Source['beats']){
         apt::source { 'beats':
-          ensure   => $::filebeat_deprecated::alternate_ensure,
-          location => $debian_repo_url,
-          release  => 'stable',
-          repos    => 'main',
-          key      => {
+          ensure       => $::filebeat_deprecated::alternate_ensure,
+          location     => $debian_repo_url,
+          release      => 'stable',
+          architecture => 'amd64',
+          repos        => 'main',
+          key          => {
             id     => '46095ACC8548582C1A2699A9D27D666CD88E42B4',
             source => 'https://artifacts.elastic.co/GPG-KEY-elasticsearch',
           },
